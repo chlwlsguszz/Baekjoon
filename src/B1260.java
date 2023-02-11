@@ -71,11 +71,7 @@ public class B1260 {
             adjList[v2].add(v1);
         }
 
-        visited = new boolean[n];
-
-        for(int i=0;i<m;i++) {
-
-        }
+        visited = new boolean[n+1];
 
         dfs(v);
         bfs(v);
