@@ -1,79 +1,69 @@
-import java.util.Iterator;
+import java.io.*;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
 
 public class B1260 {
+    static int graph[][];
+    static boolean[] visited = new boolean[1001];
+    static int n, m;
+    static Queue<Integer> queue = new LinkedList<>();
 
-    static boolean[] visited;
-    static LinkedList<Integer>[] adjList;
-    public static void dfs(int v) {
-        if(visited[v]) return;
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static void main(String[] args) throws IOException {
+        String str[] = br.readLine().split(" ");
 
-        System.out.print(v + " ");
-        visited[v] = true;
+        n = Integer.parseInt(str[0]);
+        m = Integer.parseInt(str[1]);
+        int v = Integer.parseInt(str[2]);
 
-        // 해당 노드에 존재하는 노드 수만큼 반복
-        for (int i = 0; i < adjList[v].size(); i++) {
-            int MIN = 1001;
+        graph = new int[n+1][n+1];
 
-            // 해당 노드가 가장 낮은 수인지 모두 방문하여 검증
-            for (int j = 0; j < adjList[v].size(); j++) {
-                int cur = adjList[v].get(j);
+        for(int i=0; i<m; i++) {
+            str = br.readLine().split(" ");
+            int v1 = Integer.parseInt(str[0]);
+            int v2 = Integer.parseInt(str[1]);
 
-                if(!visited[cur]) {
-                    MIN = Math.min(MIN, cur);
-                }
-            }
-
-            if(MIN == 1001) break;
-
-            dfs(MIN);
+            graph[v1][v2] = 1;
+            graph[v2][v1] = 1;
         }
-        System.out.println();
+
+        dfs(v);
+        bw.write("\n");
+        Arrays.fill(visited, false);
+
+        bfs(v);
+        bw.write("\n");
+
+        bw.flush();
     }
-    public static void bfs(int v) {
-        Queue<Integer> queue = new LinkedList<>();
+
+    public static void dfs(int v) throws IOException{
         visited[v] = true;
+        bw.write(v+" ");
+
+        for(int i=1;i<=n;i++) {
+            if(graph[v][i] == 1 && !visited[i]) {
+                dfs(i);
+            }
+        }
+    }
+
+    public static void bfs(int v) throws IOException {
         queue.add(v);
+        visited[v] = true;
 
         while(!queue.isEmpty()) {
             v = queue.poll();
-            System.out.print(v+" ");
+            bw.write(v+" ");
 
-            Iterator<Integer> it = adjList[v].listIterator();
-            while(it.hasNext()) {
-                int w = it.next();
-                if(!visited[w]) {
-                    visited[w] = true;
-                    queue.add(w);
+            for(int i=0;i<=n;i++) {
+                if(graph[v][i] == 1 && !visited[i]) {
+                    queue.add(i);
+                    visited[i] = true;
                 }
             }
         }
-        System.out.println();
-    }
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        int n = sc.nextInt();
-        int m = sc.nextInt();
-        int v = sc.nextInt();
-
-        adjList = new LinkedList[n+1];
-        for(int i=1;i<=n;i++) {
-            adjList[i] = new LinkedList<Integer>();
-        }
-
-        for(int i=0;i<m;i++) {
-            int v1 = sc.nextInt();
-            int v2 = sc.nextInt();
-            adjList[v1].add(v2);
-            adjList[v2].add(v1);
-        }
-
-        visited = new boolean[n+1];
-
-        dfs(v);
-        bfs(v);
     }
 }
